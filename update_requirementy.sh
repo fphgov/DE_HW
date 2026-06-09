@@ -1,21 +1,5 @@
 #!/bin/bash
 
-# filepath: /home/venczeli.jozsef/airflow_dev_template/airflow_project/update_requirements.sh
-#
-# Generates requirements.txt for each package by resolving dependencies against
-# the Airflow constraint file. This ensures all packages are compatible with the
-# Airflow version used in Docker.
-#
-# Usage:
-#   bash update_requirementy.sh
-#
-# To add a new dependency:
-#   1. cd packages/<your_package>
-#   2. poetry add <package>         # updates pyproject.toml and poetry.lock
-#   3. cd ../..
-#   4. bash update_requirementy.sh  # regenerates requirements.txt
-#   5. docker compose build --no-cache && docker compose up
-
 # Airflow constraint file - must match the version in Dockerfile
 AIRFLOW_CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt"
 
