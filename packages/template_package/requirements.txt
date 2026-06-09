@@ -21,6 +21,10 @@ psycopg2-binary==2.9.10
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
     #   template_package (pyproject.toml)
+pymssql==2.3.2
+    # via
+    #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
+    #   template_package (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt

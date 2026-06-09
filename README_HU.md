@@ -9,6 +9,7 @@ A repo tartalmaz:
 - **Apache Airflow 2.10.4** Dockerben futtatva (webserver + scheduler + Postgres metaadatbázis)
 - **`packages/template_package`** — egy Python csomag, ami szerkeszthető módban van telepítve Airflow-ba. Ide kerüljön az újrafelhasználható logika (DB kapcsolatok, transzformációk, segédfüggvények stb.), és a DAG-okból importálható
 - **`dags/`** — DAG fájlok; minden ide kerülő `.py` fájlt automatikusan felvesz az Airflow (volume-mount, nincs szükség újraépítésre)
+- **MSSQL 2022** célrendszer — ebbe kell sémát létrehozni és adatot írni (lásd lejjebb)
 
 ---
 
@@ -125,9 +126,60 @@ poetry run pytest
 # Konténerek leállítása (adatok megmaradnak)
 docker compose down
 
-# Leállítás és az összes adat törlése (Postgres volume is)
+# Leállítás és az összes adat törlése (Postgres + MSSQL volume is)
 docker compose down -v
 ```
+
+---
+
+## Célrendszer (MSSQL)
+
+A stack részeként fut egy Microsoft SQL Server 2022 példány. Úgy kell kezelni, mint egy távoli adatbázis-szervert — a feladat: kapcsolódj hozzá, hozz létre egy sémát, és írj bele adatot.
+
+### Kapcsolódási adatok
+
+| Tulajdonság | Érték |
+|---|---|
+| Host (Docker-ből / DAG kódból) | `mssql` |
+| Host (saját gépről) | `localhost` |
+| Port | `1433` |
+| Adatbázis | `candidate_db` |
+| Felhasználónév | `candidate` |
+| Jelszó | `HW_Candidate1!` |
+
+### Kapcsolódás DAG-ból
+
+A kapcsolódási adatok előre be vannak töltve **Airflow Variable**-ként, így nem kell hardcode-olni:
+
+```python
+from airflow.models import Variable
+import pymssql
+
+conn = pymssql.connect(
+    server=Variable.get("mssql_host"),
+    port=int(Variable.get("mssql_port")),
+    database=Variable.get("mssql_database"),
+    user=Variable.get("mssql_user"),
+    password=Variable.get("mssql_password"),
+)
+```
+
+SQLAlchemy-vel:
+
+```python
+from sqlalchemy import create_engine
+from airflow.models import Variable
+
+engine = create_engine(
+    f"mssql+pymssql://{Variable.get('mssql_user')}:{Variable.get('mssql_password')}"
+    f"@{Variable.get('mssql_host')}:{Variable.get('mssql_port')}"
+    f"/{Variable.get('mssql_database')}"
+)
+```
+
+> **Miért `pymssql` és nem pyodbc?**  
+> A `pymssql` önálló wheel-ként érkezik — nem szükséges rendszerszintű ODBC driver telepítése.  
+> Már szerepel a `requirements.txt`-ben és telepítve van az Airflow konténerekbe.
 
 ---
 

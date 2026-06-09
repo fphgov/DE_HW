@@ -125,9 +125,60 @@ poetry run pytest
 # Stop containers (keeps data)
 docker compose down
 
-# Stop and remove all data (Postgres volume included)
+# Stop and remove all data (Postgres + MSSQL volumes included)
 docker compose down -v
 ```
+
+---
+
+## Target database (MSSQL)
+
+A Microsoft SQL Server 2022 instance runs as part of the stack. Treat it as you would a remote database server — your task is to connect to it, create a schema, and write data into it.
+
+### Connection details
+
+| Property | Value                |
+|----------|----------------------|
+| Host (from inside Docker / DAG code) | `mssql` |
+| Host (from your local machine)       | `localhost` |
+| Port     | `1433`               |
+| Database | `candidate_db`       |
+| Username | `candidate`          |
+| Password | `HW_Candidate1!`     |
+
+### Connecting from a DAG
+
+The connection details are pre-loaded as **Airflow Variables** so you can access them without hardcoding anything:
+
+```python
+from airflow.models import Variable
+import pymssql
+
+conn = pymssql.connect(
+    server=Variable.get("mssql_host"),
+    port=int(Variable.get("mssql_port")),
+    database=Variable.get("mssql_database"),
+    user=Variable.get("mssql_user"),
+    password=Variable.get("mssql_password"),
+)
+```
+
+Or with SQLAlchemy:
+
+```python
+from sqlalchemy import create_engine
+from airflow.models import Variable
+
+engine = create_engine(
+    f"mssql+pymssql://{Variable.get('mssql_user')}:{Variable.get('mssql_password')}"
+    f"@{Variable.get('mssql_host')}:{Variable.get('mssql_port')}"
+    f"/{Variable.get('mssql_database')}"
+)
+```
+
+> **Why `pymssql` and not pyodbc?**  
+> `pymssql` ships as a self-contained wheel — no system-level ODBC driver installation needed.
+> It is already included in `requirements.txt` and installed into the Airflow containers.
 
 ---
 
