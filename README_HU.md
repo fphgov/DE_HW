@@ -16,7 +16,7 @@ A repo tartalmaz:
 ## Előfeltételek
 
 - [Docker](https://docs.docker.com/get-docker/) + [Docker Compose](https://docs.docker.com/compose/install/)
-- [Poetry](https://python-poetry.org/docs/#installation) (lokális fejlesztéshez és csomagok hozzáadásához)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) (lokális fejlesztéshez és csomagok hozzáadásához)
 
 ---
 
@@ -36,7 +36,7 @@ docker compose up
 
 ## Airflow UI
 
-Futás közben elérhető: **http://localhost:8081**
+Futás közben elérhető: **http://localhost:8085**
 
 | Felhasználónév | Jelszó  |
 |----------------|---------|
@@ -81,9 +81,9 @@ A `template_package` **szerkeszthető módban** (editable install) van telepítv
 > ⚠️ Mindig ebben a sorrendben kövesd a lépéseket. A `requirements.txt`-t **ne szerkeszd kézzel**.
 
 ```bash
-# 1. Csomag hozzáadása Poetry-vel (frissíti a pyproject.toml-t és a poetry.lock-ot)
+# 1. Csomag hozzáadása uv-vel (frissíti a pyproject.toml-t és a uv.lock-ot)
 cd packages/template_package
-poetry add <csomagnév>
+uv add <csomagnév>
 
 # 2. Vissza a repo gyökerére, requirements.txt újragenerálása
 cd ../..
@@ -94,7 +94,7 @@ docker compose build --no-cache
 docker compose up
 ```
 
-**Miért kell a script?** A `requirements.txt`-t a `pip-compile` generálja az Airflow constraint fájl felhasználásával. Ez garantálja, hogy az új függőség kompatibilis az Airflow saját pinned verzióival — ha nem az, a script jól látható hibával áll le, mielőtt bármi eltörne.
+**Miért kell a script?** A `requirements.txt`-t a `uv pip compile` generálja az Airflow constraint fájl felhasználásával. Ez garantálja, hogy az új függőség kompatibilis az Airflow saját pinned verzióival — ha nem az, a script jól látható hibával áll le, mielőtt bármi eltörne.
 
 ---
 
@@ -114,8 +114,8 @@ docker compose up
 
 ```bash
 cd packages/template_package
-poetry install          # dev függőségek lokális telepítése
-poetry run pytest
+uv sync                 # dev függőségek lokális telepítése
+uv run pytest
 ```
 
 ---
@@ -185,7 +185,7 @@ engine = create_engine(
 
 ## Függőségkezelés — hogyan működik
 
-A `requirements.txt` **nem** egy sima pip requirements fájl, és **nem** `poetry export`-tal generált. A `pip-compile` állítja elő az [Airflow 2.10.4 constraint fájl](https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt) felhasználásával.
+A `requirements.txt` **nem** egy sima pip requirements fájl. A `uv pip compile` állítja elő az [Airflow 2.10.4 constraint fájl](https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt) felhasználásával.
 
 Ez azt jelenti:
 - Minden pinned verzió garantáltan kompatibilis az Airflow-val

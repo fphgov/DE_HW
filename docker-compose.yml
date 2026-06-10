@@ -26,7 +26,7 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      - AIRFLOW__CORE__BASE_URL=http://localhost:8081
+      - AIRFLOW__CORE__BASE_URL=http://localhost:8085
       # - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags # do I need this here?
       # - AIRFLOW__LOGGING__BASE_LOG_FOLDER=/usr/local/airflow/logs
       - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
@@ -45,7 +45,7 @@ services:
       - ./dags:/usr/local/airflow/dags
       - ./packages:/usr/local/airflow/packages
     ports:
-      - "8081:8080"
+      - "8085:8080"
     depends_on:
       - postgres
       - airflow-init
@@ -65,7 +65,7 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
       - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags
-      - AIRFLOW__CORE__BASE_URL=http://localhost:8081
+      - AIRFLOW__CORE__BASE_URL=http://localhost:8085
       # - AIRFLOW__LOGGING__BASE_LOG_FOLDER=/usr/local/airflow/logs
       # TODO: sort out secret key handling: smooth dev vs prod
       - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey

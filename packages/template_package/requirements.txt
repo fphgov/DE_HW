@@ -1,5 +1,5 @@
 dotenv==0.9.9
-    # via template_package (pyproject.toml)
+    # via template-package (pyproject.toml)
 et-xmlfile==2.0.0
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
@@ -7,24 +7,24 @@ et-xmlfile==2.0.0
 numpy==1.26.4
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
+    #   template-package (pyproject.toml)
     #   pandas
-    #   template_package (pyproject.toml)
 openpyxl==3.1.5
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
-    #   template_package (pyproject.toml)
+    #   template-package (pyproject.toml)
 pandas==2.1.4
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
-    #   template_package (pyproject.toml)
+    #   template-package (pyproject.toml)
 psycopg2-binary==2.9.10
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
-    #   template_package (pyproject.toml)
+    #   template-package (pyproject.toml)
 pymssql==2.3.2
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
-    #   template_package (pyproject.toml)
+    #   template-package (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
@@ -34,7 +34,7 @@ python-dotenv==1.0.1
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
     #   dotenv
 python-json-logger==4.1.0
-    # via template_package (pyproject.toml)
+    # via template-package (pyproject.toml)
 pytz==2024.2
     # via
     #   -c https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt
