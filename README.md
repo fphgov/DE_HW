@@ -144,7 +144,7 @@ A Microsoft SQL Server 2022 instance runs as part of the stack. Treat it as you 
 | Port     | `1433`               |
 | Database | `candidate_db`       |
 | Username | `candidate`          |
-| Password | `HW_Candidate1!`     |
+| Password | `HwC4ndidate#2026`     |
 
 ### Connecting from a DAG
 

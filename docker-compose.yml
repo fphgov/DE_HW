@@ -38,7 +38,7 @@ services:
       - AIRFLOW_VAR_MSSQL_PORT=1433
       - AIRFLOW_VAR_MSSQL_DATABASE=candidate_db
       - AIRFLOW_VAR_MSSQL_USER=candidate
-      - AIRFLOW_VAR_MSSQL_PASSWORD=HW_Candidate1!
+      - AIRFLOW_VAR_MSSQL_PASSWORD=HwC4ndidate#20261+
     volumes:
       - ./dags:/usr/local/airflow/dags
       - ./packages:/usr/local/airflow/packages
@@ -73,7 +73,7 @@ services:
       - AIRFLOW_VAR_MSSQL_PORT=1433
       - AIRFLOW_VAR_MSSQL_DATABASE=candidate_db
       - AIRFLOW_VAR_MSSQL_USER=candidate
-      - AIRFLOW_VAR_MSSQL_PASSWORD=HW_Candidate1!
+      - AIRFLOW_VAR_MSSQL_PASSWORD=HwC4ndidate#2026
     volumes:
       - ./dags:/usr/local/airflow/dags
       - ./packages:/usr/local/airflow/packages
@@ -100,17 +100,7 @@ services:
   # ── Target database ────────────────────────────────────────────────────────
   # Treated as a remote MSSQL server.  Candidates connect to it, create a
   # schema, and write data into it.
-  #
-  # ┌─ Candidate credentials (hand these to the candidate) ──────────────────┐
-  # │  host (in-Docker):  mssql_server          host (local machine): localhost      │
-  # │  port:              1433                                                 │
-  # │  database:          candidate_db                                         │
-  # │  username:          candidate                                            │
-  # │  password:          HW_Candidate1!                                       │
-  # └─────────────────────────────────────────────────────────────────────────┘
-  #
-  # SA password below is internal — do NOT share with candidates.
-  # Candidate login is provisioned by db/init.sql on first start.
+
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql_server
