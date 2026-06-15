@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from airflow.models import Variable
 
-from .TransitStopEvent import Base
+from template_package.TransitStopEvent import Base
 
 def create_table():
     engine = create_engine(

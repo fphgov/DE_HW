@@ -14,7 +14,6 @@ def foo():
     logger = logging.getLogger("airflow.task")
     logger.info("Executing foo...")
     time.sleep(5)  # Simulate a delay
-    example_function()
     logger.info("foo completed.")
 
 
