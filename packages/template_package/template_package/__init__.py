@@ -39,7 +39,7 @@ if not logger.hasHandlers():
         pass
     logger.addHandler(stream_handler)
 
-# config for the fve database connection
+# config for the database connection
 db_config = {
     "DRIVER": "ODBC Driver 17 for SQL Server",
     "SERVER": os.environ.get("SERVER"),

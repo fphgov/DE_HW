@@ -5,7 +5,8 @@ from airflow.operators.python import PythonOperator
 import pendulum
 import logging
 import time  # Import time for sleep
-from template_package.example_module import example_function
+from template_package.example_module import main
+from template_package.Create_db_table import create_table
 
 
 def foo():
@@ -45,15 +46,15 @@ dag = DAG(
 
 
 run_foo_task = PythonOperator(
-    task_id="run_foo",
-    python_callable=foo,
+    task_id="example_function",
+    python_callable=main,
     dag=dag,
 )
 
 run_bar_task = PythonOperator(
-    task_id="run_bar",
-    python_callable=bar,
+    task_id="create_table",
+    python_callable=create_table,
     dag=dag,
 )
 
-run_foo_task >> run_bar_task
+run_bar_task >> run_foo_task
