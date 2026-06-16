@@ -25,10 +25,9 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
       - AIRFLOW__CORE__BASE_URL=http://localhost:8085
-      # - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags # do I need this here?
+      - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags
       # - AIRFLOW__LOGGING__BASE_LOG_FOLDER=/usr/local/airflow/logs
       - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
-      # TODO: sort out secret key handling: smooth dev vs prod
       - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
       # ── MSSQL connection details exposed as Airflow Variables ──────────────
       # Use Variable.get("mssql_host") etc. in your DAGs and package code.
@@ -63,11 +62,8 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
       - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags
-      - AIRFLOW__CORE__BASE_URL=http://localhost:8085
       # - AIRFLOW__LOGGING__BASE_LOG_FOLDER=/usr/local/airflow/logs
-      # TODO: sort out secret key handling: smooth dev vs prod
       - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
-      # - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
       # ── MSSQL connection details exposed as Airflow Variables ──────────────
       - AIRFLOW_VAR_MSSQL_HOST=mssql
       - AIRFLOW_VAR_MSSQL_PORT=1433
@@ -111,9 +107,9 @@ services:
     ports:
       - "1433:1433"   # exposed so candidates can also connect from their host
     volumes:
-      - ./db:/docker-entrypoint-initdb.d:ro
+      - ./db:/docker-init:ro
       - mssql_data:/var/opt/mssql
-    entrypoint: /bin/bash /docker-entrypoint-initdb.d/entrypoint.sh
+    entrypoint: /bin/bash /docker-init/entrypoint.sh
     healthcheck:
       test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "SA_Password123!" -Q "SELECT 1" -b -C
       interval: 15s

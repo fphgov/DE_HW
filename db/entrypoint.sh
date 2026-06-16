@@ -30,7 +30,7 @@ echo "[entrypoint] Running init.sql..."
     -S localhost \
     -U sa \
     -P "$MSSQL_SA_PASSWORD" \
-    -i /docker-entrypoint-initdb.d/init.sql \
+    -i /docker-init/init.sql \
     -C
 
 echo "[entrypoint] Initialisation complete."
