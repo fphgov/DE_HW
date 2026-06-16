@@ -5,6 +5,7 @@ from airflow.operators.python import PythonOperator
 import pendulum
 import logging
 import time  # Import time for sleep
+from template_package.example_module import example_function
 
 
 def foo():
@@ -12,6 +13,7 @@ def foo():
     logger = logging.getLogger("airflow.task")
     logger.info("Executing foo...")
     time.sleep(5)  # Simulate a delay
+    example_function()
     logger.info("foo completed.")
 
 

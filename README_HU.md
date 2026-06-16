@@ -9,13 +9,14 @@ A repo tartalmaz:
 - **Apache Airflow 2.10.4** Dockerben futtatva (webserver + scheduler + Postgres metaadatbázis)
 - **`packages/template_package`** — egy Python csomag, ami szerkeszthető módban van telepítve Airflow-ba. Ide kerüljön az újrafelhasználható logika (DB kapcsolatok, transzformációk, segédfüggvények stb.), és a DAG-okból importálható
 - **`dags/`** — DAG fájlok; minden ide kerülő `.py` fájlt automatikusan felvesz az Airflow (volume-mount, nincs szükség újraépítésre)
+- **MSSQL 2022** célrendszer — ebbe kell sémát létrehozni és adatot írni (lásd lejjebb)
 
 ---
 
 ## Előfeltételek
 
 - [Docker](https://docs.docker.com/get-docker/) + [Docker Compose](https://docs.docker.com/compose/install/)
-- [Poetry](https://python-poetry.org/docs/#installation) (lokális fejlesztéshez és csomagok hozzáadásához)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) (lokális fejlesztéshez és csomagok hozzáadásához)
 
 ---
 
@@ -35,7 +36,7 @@ docker compose up
 
 ## Airflow UI
 
-Futás közben elérhető: **http://localhost:8081**
+Futás közben elérhető: **http://localhost:8085**
 
 | Felhasználónév | Jelszó  |
 |----------------|---------|
@@ -80,9 +81,9 @@ A `template_package` **szerkeszthető módban** (editable install) van telepítv
 > ⚠️ Mindig ebben a sorrendben kövesd a lépéseket. A `requirements.txt`-t **ne szerkeszd kézzel**.
 
 ```bash
-# 1. Csomag hozzáadása Poetry-vel (frissíti a pyproject.toml-t és a poetry.lock-ot)
+# 1. Csomag hozzáadása uv-vel (frissíti a pyproject.toml-t és a uv.lock-ot)
 cd packages/template_package
-poetry add <csomagnév>
+uv add <csomagnév>
 
 # 2. Vissza a repo gyökerére, requirements.txt újragenerálása
 cd ../..
@@ -93,7 +94,7 @@ docker compose build --no-cache
 docker compose up
 ```
 
-**Miért kell a script?** A `requirements.txt`-t a `pip-compile` generálja az Airflow constraint fájl felhasználásával. Ez garantálja, hogy az új függőség kompatibilis az Airflow saját pinned verzióival — ha nem az, a script jól látható hibával áll le, mielőtt bármi eltörne.
+**Miért kell a script?** A `requirements.txt`-t a `uv pip compile` generálja az Airflow constraint fájl felhasználásával. Ez garantálja, hogy az új függőség kompatibilis az Airflow saját pinned verzióival — ha nem az, a script jól látható hibával áll le, mielőtt bármi eltörne.
 
 ---
 
@@ -113,8 +114,8 @@ docker compose up
 
 ```bash
 cd packages/template_package
-poetry install          # dev függőségek lokális telepítése
-poetry run pytest
+uv sync                 # dev függőségek lokális telepítése
+uv run pytest
 ```
 
 ---
@@ -125,15 +126,66 @@ poetry run pytest
 # Konténerek leállítása (adatok megmaradnak)
 docker compose down
 
-# Leállítás és az összes adat törlése (Postgres volume is)
+# Leállítás és az összes adat törlése (Postgres + MSSQL volume is)
 docker compose down -v
 ```
 
 ---
 
+## Célrendszer (MSSQL)
+
+A stack részeként fut egy Microsoft SQL Server 2022 példány. Úgy kell kezelni, mint egy távoli adatbázis-szervert — a feladat: kapcsolódj hozzá, hozz létre egy sémát, és írj bele adatot.
+
+### Kapcsolódási adatok
+
+| Tulajdonság | Érték |
+|---|---|
+| Host (Docker-ből / DAG kódból) | `mssql` |
+| Host (saját gépről) | `localhost` |
+| Port | `1433` |
+| Adatbázis | `candidate_db` |
+| Felhasználónév | `candidate` |
+| Jelszó | `HW_Candidate1!` |
+
+### Kapcsolódás DAG-ból
+
+A kapcsolódási adatok előre be vannak töltve **Airflow Variable**-ként, így nem kell hardcode-olni:
+
+```python
+from airflow.models import Variable
+import pymssql
+
+conn = pymssql.connect(
+    server=Variable.get("mssql_host"),
+    port=int(Variable.get("mssql_port")),
+    database=Variable.get("mssql_database"),
+    user=Variable.get("mssql_user"),
+    password=Variable.get("mssql_password"),
+)
+```
+
+SQLAlchemy-vel:
+
+```python
+from sqlalchemy import create_engine
+from airflow.models import Variable
+
+engine = create_engine(
+    f"mssql+pymssql://{Variable.get('mssql_user')}:{Variable.get('mssql_password')}"
+    f"@{Variable.get('mssql_host')}:{Variable.get('mssql_port')}"
+    f"/{Variable.get('mssql_database')}"
+)
+```
+
+> **Miért `pymssql` és nem pyodbc?**  
+> A `pymssql` önálló wheel-ként érkezik — nem szükséges rendszerszintű ODBC driver telepítése.  
+> Már szerepel a `requirements.txt`-ben és telepítve van az Airflow konténerekbe.
+
+---
+
 ## Függőségkezelés — hogyan működik
 
-A `requirements.txt` **nem** egy sima pip requirements fájl, és **nem** `poetry export`-tal generált. A `pip-compile` állítja elő az [Airflow 2.10.4 constraint fájl](https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt) felhasználásával.
+A `requirements.txt` **nem** egy sima pip requirements fájl. A `uv pip compile` állítja elő az [Airflow 2.10.4 constraint fájl](https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.12.txt) felhasználásával.
 
 Ez azt jelenti:
 - Minden pinned verzió garantáltan kompatibilis az Airflow-val

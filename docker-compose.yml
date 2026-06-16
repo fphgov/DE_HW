@@ -26,17 +26,26 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      - AIRFLOW__CORE__BASE_URL=http://localhost:8081
+      - AIRFLOW__CORE__BASE_URL=http://localhost:8085
       # - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags # do I need this here?
       # - AIRFLOW__LOGGING__BASE_LOG_FOLDER=/usr/local/airflow/logs
       - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
       # TODO: sort out secret key handling: smooth dev vs prod
       - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
+      # ── MSSQL connection details exposed as Airflow Variables ──────────────
+      # Use Variable.get("mssql_host") etc. in your DAGs and package code.
+      # From inside Docker the host is "mssql"; candidates connecting from their
+      # local machine should use "localhost" with port 1433.
+      - AIRFLOW_VAR_MSSQL_HOST=mssql
+      - AIRFLOW_VAR_MSSQL_PORT=1433
+      - AIRFLOW_VAR_MSSQL_DATABASE=candidate_db
+      - AIRFLOW_VAR_MSSQL_USER=candidate
+      - AIRFLOW_VAR_MSSQL_PASSWORD=HW_Candidate1!
     volumes:
       - ./dags:/usr/local/airflow/dags
       - ./packages:/usr/local/airflow/packages
     ports:
-      - "8081:8080"
+      - "8085:8080"
     depends_on:
       - postgres
       - airflow-init
@@ -56,11 +65,17 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
       - AIRFLOW__CORE__DAGS_FOLDER=/usr/local/airflow/dags
-      - AIRFLOW__CORE__BASE_URL=http://localhost:8081
+      - AIRFLOW__CORE__BASE_URL=http://localhost:8085
       # - AIRFLOW__LOGGING__BASE_LOG_FOLDER=/usr/local/airflow/logs
       # TODO: sort out secret key handling: smooth dev vs prod
       - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
       # - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
+      # ── MSSQL connection details exposed as Airflow Variables ──────────────
+      - AIRFLOW_VAR_MSSQL_HOST=mssql
+      - AIRFLOW_VAR_MSSQL_PORT=1433
+      - AIRFLOW_VAR_MSSQL_DATABASE=candidate_db
+      - AIRFLOW_VAR_MSSQL_USER=candidate
+      - AIRFLOW_VAR_MSSQL_PASSWORD=HW_Candidate1!
     volumes:
       - ./dags:/usr/local/airflow/dags
       - ./packages:/usr/local/airflow/packages
@@ -84,5 +99,40 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # ── Target database ────────────────────────────────────────────────────────
+  # Treated as a remote MSSQL server.  Candidates connect to it, create a
+  # schema, and write data into it.
+  #
+  # ┌─ Candidate credentials (hand these to the candidate) ──────────────────┐
+  # │  host (in-Docker):  mssql          host (local machine): localhost      │
+  # │  port:              1433                                                 │
+  # │  database:          candidate_db                                         │
+  # │  username:          candidate                                            │
+  # │  password:          HW_Candidate1!                                       │
+  # └─────────────────────────────────────────────────────────────────────────┘
+  #
+  # SA password below is internal — do NOT share with candidates.
+  # Candidate login is provisioned by db/init.sql on first start.
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "SA_Password123!"   # internal only
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"   # exposed so candidates can also connect from their host
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d:ro
+      - mssql_data:/var/opt/mssql
+    entrypoint: /bin/bash /docker-entrypoint-initdb.d/entrypoint.sh
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "SA_Password123!" -Q "SELECT 1" -b -C
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
 volumes:
   postgres_data:
+  mssql_data:

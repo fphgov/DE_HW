@@ -12,10 +12,10 @@ for PACKAGE_DIR in "$BASE_DIR"/*; do
 
         cd "$PACKAGE_DIR" || exit
 
-        # Use pip-compile to resolve dependencies against the Airflow constraint file.
+        # Use uv pip compile to resolve dependencies against the Airflow constraint file.
         # This guarantees the output requirements.txt is compatible with Airflow's
         # pinned versions, avoiding conflicts at Docker build time.
-        poetry run pip-compile \
+        uv pip compile \
             --constraint "$AIRFLOW_CONSTRAINT_URL" \
             --no-header \
             --strip-extras \
