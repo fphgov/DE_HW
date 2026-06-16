@@ -25,7 +25,7 @@ for PACKAGE_DIR in "$BASE_DIR"/*; do
         if [ $? -eq 0 ]; then
             echo "Successfully updated requirements.txt for $(basename "$PACKAGE_DIR")"
         else
-            echo "Failed to update requirements.txt for $(basename "$PACKAGE_DIR")"
+            echo "Failed to update requirements.txt for $(basename "$PACKAGE_DIR") - Check Airflow constraints! "$AIRFLOW_CONSTRAINT_URL""
             exit 1
         fi
 

@@ -139,12 +139,12 @@ A Microsoft SQL Server 2022 instance runs as part of the stack. Treat it as you 
 
 | Property | Value                |
 |----------|----------------------|
-| Host (from inside Docker / DAG code) | `mssql` |
+| Host (from inside Docker / DAG code) | `mssql_server` |
 | Host (from your local machine)       | `localhost` |
 | Port     | `1433`               |
 | Database | `candidate_db`       |
 | Username | `candidate`          |
-| Password | `HW_Candidate1!`     |
+| Password | `HwC4ndidate#2026`     |
 
 ### Connecting from a DAG
 

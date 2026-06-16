@@ -14,7 +14,7 @@ GO
 -- Create the server-level login
 IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'candidate')
 BEGIN
-    CREATE LOGIN [candidate] WITH PASSWORD = N'HW_Candidate1!';
+    CREATE LOGIN [candidate] WITH PASSWORD = N'HwC4ndidate#2026';
 END
 GO
 
