@@ -38,7 +38,7 @@ services:
       - AIRFLOW_VAR_MSSQL_PORT=1433
       - AIRFLOW_VAR_MSSQL_DATABASE=candidate_db
       - AIRFLOW_VAR_MSSQL_USER=candidate
-      - AIRFLOW_VAR_MSSQL_PASSWORD=HwC4ndidate#20261+
+      - AIRFLOW_VAR_MSSQL_PASSWORD=HwC4ndidate#2026
     volumes:
       - ./dags:/usr/local/airflow/dags
       - ./packages:/usr/local/airflow/packages

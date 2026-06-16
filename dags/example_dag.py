@@ -5,8 +5,7 @@ from airflow.operators.python import PythonOperator
 import pendulum
 import logging
 import time  # Import time for sleep
-from template_package.example_module import main
-from template_package.Create_db_table import create_table
+from template_package.example_module import example_function
 
 
 def foo():
@@ -14,6 +13,7 @@ def foo():
     logger = logging.getLogger("airflow.task")
     logger.info("Executing foo...")
     time.sleep(5)  # Simulate a delay
+    example_function()
     logger.info("foo completed.")
 
 
@@ -45,15 +45,15 @@ dag = DAG(
 
 
 run_foo_task = PythonOperator(
-    task_id="example_function",
-    python_callable=main,
+    task_id="run_foo",
+    python_callable=foo,
     dag=dag,
 )
 
 run_bar_task = PythonOperator(
-    task_id="create_table",
-    python_callable=create_table,
+    task_id="run_bar",
+    python_callable=bar,
     dag=dag,
 )
 
-run_bar_task >> run_foo_task
+run_foo_task >> run_bar_task
