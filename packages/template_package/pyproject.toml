@@ -5,7 +5,6 @@ description = "template python package, do what you will, change, copy, remove, 
 authors = [
     { name = "Venczeli József", email = "venczeli.jozsef@budapest.hu" }
 ]
-readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
     "pandas>=2.1.2",

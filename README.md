@@ -97,7 +97,7 @@ docker compose up
 
 ---
 
-## Updating requirements (without adding new packages)
+## Updating requirements
 
 If you've edited `pyproject.toml` manually or pulled changes from upstream:
 
