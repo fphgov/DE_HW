@@ -9,7 +9,6 @@ A repo tartalmaz:
 - **Apache Airflow 2.10.4** Dockerben futtatva (webserver + scheduler + Postgres metaadatbázis)
 - **`packages/template_package`** — egy Python csomag, ami szerkeszthető módban van telepítve Airflow-ba. Ide kerüljön az újrafelhasználható logika (DB kapcsolatok, transzformációk, segédfüggvények stb.), és a DAG-okból importálható
 - **`dags/`** — DAG fájlok; minden ide kerülő `.py` fájlt automatikusan felvesz az Airflow (volume-mount, nincs szükség újraépítésre)
-- **MSSQL 2022** célrendszer — ebbe kell sémát létrehozni és adatot írni (lásd lejjebb)
 
 ---
 
@@ -98,7 +97,7 @@ docker compose up
 
 ---
 
-## Requirements frissítése (új csomag hozzáadása nélkül)
+## Requirements frissítése
 
 Ha kézzel szerkesztetted a `pyproject.toml`-t, vagy upstream változásokat húztál be:
 
@@ -145,7 +144,7 @@ A stack részeként fut egy Microsoft SQL Server 2022 példány. Úgy kell kezel
 | Port | `1433` |
 | Adatbázis | `candidate_db` |
 | Felhasználónév | `candidate` |
-| Jelszó | `HW_Candidate1!` |
+| Jelszó | `HwC4ndidate#2026` |
 
 ### Kapcsolódás DAG-ból
 
