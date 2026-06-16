@@ -2,7 +2,6 @@
 It configures the logger to output log records in JSON format,
 Use it anywhere like this: `from template_package import logger`"""
 
-import os
 import logging
 from pythonjsonlogger import json
 import dotenv
@@ -39,12 +38,4 @@ if not logger.hasHandlers():
         pass
     logger.addHandler(stream_handler)
 
-# config for the database connection
-db_config = {
-    "DRIVER": "ODBC Driver 17 for SQL Server",
-    "SERVER": os.environ.get("SERVER"),
-    "DATABASE": os.environ.get("DATABASE"),
-    "UID": os.environ.get("UID"),
-    "PWD": os.environ.get("PWD"),
-    "TRUSTED_CONNECTION": False,
-}
+
